@@ -1,4 +1,4 @@
-package com.study.estore.ProductService;
+package com.study.estore.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
