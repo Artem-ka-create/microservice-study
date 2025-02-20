@@ -1,6 +1,8 @@
 package com.study.estore.interceptors;
 
 import com.study.estore.commands.CreateProductCommand;
+import com.study.estore.core.data.ProductLookUpEntity;
+import com.study.estore.core.data.ProductLookUpRepository;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.messaging.MessageDispatchInterceptor;
 import org.slf4j.Logger;
@@ -15,21 +17,33 @@ import java.util.function.BiFunction;
 public class CreateProductCommandInterceprtor implements MessageDispatchInterceptor<CommandMessage<?>> {
 
     private static final Logger LOGGER =  LoggerFactory.getLogger(CreateProductCommandInterceprtor.class);
+    private ProductLookUpRepository productLookUpRepository;
+
+    public CreateProductCommandInterceprtor(ProductLookUpRepository productLookUpRepository) {
+        this.productLookUpRepository = productLookUpRepository;
+    }
 
     @Nonnull
     @Override
     public BiFunction<Integer, CommandMessage<?>, CommandMessage<?>> handle(@Nonnull List<? extends CommandMessage<?>> messages) {
+
+
         return (index, command) -> {
 
             LOGGER.info("Intercepted command: "+ command.getPayloadType());
             if (CreateProductCommand.class.equals(command.getPayloadType())){
                 CreateProductCommand createProductCommand = (CreateProductCommand)command.getPayload();
-                if ( createProductCommand.getPrice().compareTo( 0 ) <= 0 ) {
-                    throw new IllegalArgumentException("Price cannot be less or equal than zero");
-                }
 
-                if (createProductCommand.getTitle() == null || createProductCommand.getTitle().isBlank()){
-                    throw new IllegalArgumentException("Title cannot be empty");
+                ProductLookUpEntity  productLookUpEntity= productLookUpRepository.findByProductIdOrTitle(
+                        createProductCommand.getProductId(),
+                        createProductCommand.getTitle());
+
+                if (productLookUpEntity!=null){
+                    throw new IllegalStateException(
+                            String.format("Product with productId %s or title %s already exists",
+                                    createProductCommand.getProductId(),
+                                    createProductCommand.getTitle()
+                            ));
                 }
             }
 
