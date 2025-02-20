@@ -1,6 +1,5 @@
 package com.study.estore.agregates;
 
-import com.study.estore.ProductDto;
 import com.study.estore.commands.CreateProductCommand;
 import com.study.estore.events.ProductCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
@@ -9,8 +8,6 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
-
-import java.math.BigDecimal;
 
 @Aggregate
 public class ProductAggregate {
